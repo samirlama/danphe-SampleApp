@@ -11,4 +11,6 @@ get 'login' => "sessions#new"
 post 'login' => "sessions#create"
 delete 'logout' => 'sessions#destroy'
 resources "users"
+resources "account_activations" , only: %i[edit]
+resources "password_resets", only: %i[edit update new create] 
 end
