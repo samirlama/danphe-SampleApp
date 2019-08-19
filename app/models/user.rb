@@ -48,6 +48,7 @@ class User < ApplicationRecord
     def create_activation_digest
         self.activation_token = new_token
         self.activation_digest = digest(activation_token)
+        debugger
     end
 
     # def send_email
