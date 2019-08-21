@@ -15,6 +15,7 @@ class User < ApplicationRecord
     uniqueness: true
     has_secure_password
     validates :password, presence: true, length: { minimum: 6 }
+    has_many :microposts, dependent: :destroy
     
     def downcase_email
         self.email = email.downcase
@@ -71,5 +72,9 @@ class User < ApplicationRecord
 
     def password_reset_expired?
         reset_sent_at < 2.hours.ago
+    end
+
+    def feed
+        Micropost.where(user_id: self.id)
     end
 end

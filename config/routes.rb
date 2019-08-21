@@ -13,4 +13,5 @@ delete 'logout' => 'sessions#destroy'
 resources "users"
 resources "account_activations" , only: %i[edit]
 resources "password_resets", only: %i[edit update new create] 
+resources "microposts", only: %i[create destroy]
 end
