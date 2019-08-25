@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
     # before_action :logged_in_user, only: %i[edit update show]
-    before_action :correct_user, only: %i[edit update show]
+    before_action :correct_user, only: %i[edit update show followere following]
     include SessionsHelper
     
     def index
@@ -30,6 +30,7 @@ class UsersController < ApplicationController
     end
 
     def create
+       
         @user = User.create(user_params)
         UserMailer.account_activation(@user).deliver_now
         if @user.valid? && @user.activated?
@@ -49,6 +50,20 @@ class UsersController < ApplicationController
         redirect_to "/"
     end
 
+    def following
+        @title = "Following"
+        @user  = User.find(params[:id])
+        @users = @user.following.paginate(page: params[:page])
+        render 'show_follow'
+      end
+    
+      def followers
+        @title = "Followers"
+        @user  = User.find(params[:id])
+        @users = @user.followers.paginate(page: params[:page])
+        render 'show_follow'
+      end
+
     private
     def user_params
         params.require(:user).permit(:name , :email , :password , :password_confirmation)
@@ -57,7 +72,7 @@ class UsersController < ApplicationController
    
     def correct_user
         @user = User.find_by(id: params[:id])
-        redirect_to current_user unless current_user?(@user)
+        redirect_to current_user unless current_user?(@user)           
     end
     
    

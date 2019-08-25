@@ -22,19 +22,19 @@ class MicropostsController < ApplicationController
     
       private
     
-        def micropost_params
-          params.require(:micropost).permit(:content, :picture)
+      def micropost_params
+        params.require(:micropost).permit(:content, :picture)
+      end
+      def logged_in_user
+        unless logged_in?
+          store_location
+          flash[:danger] = "Please log in to continue"
+          redirect_to root_path
         end
-        def logged_in_user
-            unless logged_in?
-                store_location
-                flash[:danger] = "Please log in to continue"
-                redirect_to root_path
-            end
-        end
-        def correct_user
-            @micropost = current_user.microposts.find_by(id: params[:id])
-            redirect_to root_url if @micropost.nil?
-        end
+      end
+      def correct_user
+        @micropost = current_user.microposts.find_by(id: params[:id])
+        redirect_to root_url if @micropost.nil?
+      end
     
 end
