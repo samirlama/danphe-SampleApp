@@ -17,5 +17,6 @@ module SampleApp
     # the framework and any gems in your application.
     # Include the authenticity token in remote forms.
     config.action_view.embed_authenticity_token_in_remote_forms = true
+    config.middleware.use RackSessionAccess::Middleware if Rails.env.test?
   end
 end

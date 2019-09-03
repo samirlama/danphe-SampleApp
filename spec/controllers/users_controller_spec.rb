@@ -6,7 +6,6 @@ RSpec.describe UsersController, type: :controller do
             users = User.where(activated: true).all
             expect(@users.to_a).to eq(users.to_a)
         end
-        
         it "renders index template" do
             get :index
             expect(response).to render_template :index
@@ -16,93 +15,90 @@ RSpec.describe UsersController, type: :controller do
     describe "GET #show" do
         let(:user_1) { FactoryBot.create(:user) }
         let(:user_2) {FactoryBot.create(:user, email: "asdasdas@gmail.com")}
-
+        before(:each) do
+            session[:user_id] = user_1.id
+        end
         context "when correct user" do  
-            before(:each) do
-                session[:user_id] = user_1.id
-            end
             it "renders show page of correct user" do
                 get :show, params:{ id: user_1.id } 
                 expect(response).to be_success
             end 
         end
         context "when incorrect user" do
-            before(:each) do
-                session[:user_id] = user_1.id
-            end
             it "renders show page of own" do
                 get :show, params: { id: user_2.id }
                 expect(response).to redirect_to(user_1)
             end
         end
-
     end
-    
+
     describe "POST #create" do
-        let(:user) {FactoryBot.attributes_for(:user)}
-        let(:invalid_user) {FactoryBot.attributes_for(:user, email: 12323)}
+        let(:user) { FactoryBot.attributes_for(:user) }
+        let!(:invalid_user) { FactoryBot.attributes_for(:invalid_user) }
+        # before (:all) do 
+		# 	ActionMailer::Base.deliveries.clear
+		# end
+        context "when user is valid" do
+            it "creates a new user" do
+                expect{
+                    post :create, params: {user: user}
+            }.to  change(User, :count).by(1)
+            end
+            it "redirects to user path" do
+                post :create, params: {user: user}
+                expect(response).to have_http_status(302)
+            end
+            
+        end
+
         context "when user is invalid" do
-            it "doesnt creates a new user" do
+            it "doesnt reates a new user" do
                 expect{
                     post :create, params: {user: invalid_user}
-            }.to  change(User, :count).by(0)
+            }.to change(User, :count).by(0)
             end
             it "redirects to root path" do
                 post :create, params: {user: invalid_user}
-                expect(response).to redirect_to root_path
+                expect(response).to render_template :new
             end
         end
-        # context "if user are valid" do
-            
-        #     it " creates a new user" do
-        #         expect{
-        #             post :create, params: {user: FactoryBot.attributes_for(:user, activated: true)}
-        #     }.to  change(User, :count).by(1)
-        #     end
-        #     it "redirects to root path" do
-        #         post :create, params: {user: FactoryBot.attributes_for(:user)}
-        #         expect(response).to redirect_to user
-        #     end
-        # end
-
     end
 
     describe "PUT #update" do
-        let!(:user_1) {FactoryBot.create(:user)}
-        # let!(:user_2) { create(:user) }
-        # context "if attributes are valid" do 
-        #     before do
-        #         session[:user_id] = user_1.id
-        #     end
-        #     it "updates post" do 
-        #         put :update, params: {id: user_1.id, user: FactoryBot.attributes_for(:user, email:"samir@gmail.comm", name: "samirdas")}
-        #         user_1.reload
-        #         expect(user_1.name).to eq("samirdas")
-        #     end
-        #     it "redirects to user" do
-        #         put :update,params: {id: user_1.id, user: FactoryBot.attributes_for(:user, email: "sasdasdgh@gmail.com", name: "samirdas")}
-        #         expect(response).to redirect_to user_1
-        #     end
-        # end
-
-        context "when user is valid" do
-            before do 
-                session[:user_id] = user_1.id
-            end 
-            context "when attributes are valid" do
-                it "doesnt update post" do
-                    put :update, params: {id: user_1.id, user: FactoryBot.attributes_for(:user, email: 2131231, name: "samirdas")}
-                    user_1.reload
-                    expect(user_1.name).to_not eq("samirdas")
-               end
-               it "redire"            
+        let(:user) { create(:user)}
+        let(:user1) { create(:user1) }
+        let(:valid_session) { {user_id: user.id} }
+        context "when user is not correct" do
+            it "redirect_to current_user" do
+                put :update, params: {id: user1.id, user: FactoryBot.attributes_for(:user) },session: valid_session 
+                expect(response).to redirect_to user
             end
-            context "when attributes are valid" do
-           it "redirect to new" do
-                put :update, params: {id: user_1.id, user: FactoryBot.attributes_for(:user, email: "sasdasdghgmail.com", name: "samirdas")}
-                expect(response).to render_template :new
-           end
         end
+        context "when attributes are valid" do 
+            it "redirects to user" do
+                put :update,params: {id: user.id, user: FactoryBot.attributes_for(:user, email: "samir@gmail.com")}, session: valid_session
+                expect(response).to redirect_to user
+            end
+        end
+     
+        context "when user is invalid" do
+             it "redirect to new" do
+                 put :update, params: {id: user.id, user: FactoryBot.attributes_for(:user1, email: "111111")}, session: valid_session
+                 expect(response).to render_template :new
+             end
+        end
+    end
 
+    describe "DELETE #destroy" do
+    let!(:user) { create(:user) }
+        it "destroys user" do
+            expect{
+            delete :destroy, params: {id: user.id}
+        }.to change(User, :count).by(-1)
+        end
+        it "redirects to root path" do 
+            delete :destroy, params: {id: user.id}
+            expect(response).to redirect_to root_path     
+        end
     end
 end

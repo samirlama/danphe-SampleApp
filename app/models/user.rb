@@ -8,7 +8,7 @@ class User < ApplicationRecord
     before_save :downcase_email
     before_create :create_activation_digest
     # after_create :send_email
-     # at right hand side self is optional
+    # at right hand side self is optional
     validates :name , presence: true , length: {maximum: 50}
    
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
@@ -20,22 +20,20 @@ class User < ApplicationRecord
     uniqueness: true
     has_secure_password
     validates :password, presence: true, length: { minimum: 6 }
-    
-
-
 
     def follow(other_user)
         active_relationships.create(followed_id: other_user.id)
-      end
+        end
     
       # Unfollows a user.
       def unfollow(other_user)
+        debugger
         active_relationships.find_by(followed_id: other_user.id).destroy
       end
     
       # Returns true if the current user is following the other user.
       def following?(other_user)
-        active_relationships.find_by(followed_id: oyther_)
+        active_relationships.find_by(followed_id: other_user.id)
       end
     
     def downcase_email
@@ -69,8 +67,7 @@ class User < ApplicationRecord
 
     def create_activation_digest
         self.activation_token = new_token
-        self.activation_digest = digest(activation_token)
-       
+        self.activation_digest = digest(activation_token)    
     end
 
     # def send_email

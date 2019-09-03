@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
     # before_action :logged_in_user, only: %i[edit update show]
-    before_action :correct_user, only: %i[edit update show followere following]
+    before_action :correct_user, only: %i[edit update show followers following]
     include SessionsHelper
     
     def index
@@ -29,17 +29,16 @@ class UsersController < ApplicationController
         end
     end
 
-    def create
-       
-        @user = User.create(user_params)
-        UserMailer.account_activation(@user).deliver_now
-        if @user.valid? && @user.activated?
+    def create 
+        @user = User.new(user_params)
+        if @user.valid? 
+            @user.save
+            UserMailer.account_activation(@user).deliver_now    
             log_in @user
             flash[:success] = "Welcome #{@user.name} to the sample App"
             redirect_to @user
         else
-            flash[:info] = "PLease check you email for email activation"
-            redirect_to '/'
+            render 'new'
         end
     end
 
@@ -66,7 +65,7 @@ class UsersController < ApplicationController
 
     private
     def user_params
-        params.require(:user).permit(:name , :email , :password , :password_confirmation)
+        params.require(:user).permit(:name , :email , :password , :password_confirmation, :activated)
     end
 
    
