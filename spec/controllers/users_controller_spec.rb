@@ -35,9 +35,6 @@ RSpec.describe UsersController, type: :controller do
     describe "POST #create" do
         let(:user) { FactoryBot.attributes_for(:user) }
         let!(:invalid_user) { FactoryBot.attributes_for(:invalid_user) }
-        # before (:all) do 
-		# 	ActionMailer::Base.deliveries.clear
-		# end
         context "when user is valid" do
             it "creates a new user" do
                 expect{
