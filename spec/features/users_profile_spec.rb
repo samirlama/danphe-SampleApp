@@ -6,8 +6,6 @@ RSpec.feature "UsersProfile", type: :feature do
   let(:micropost) { create(:micropost, user: user) }
   subject(:relationship) { Relationship.create(followed_id: user1.id, follower_id: user.id) }
  
-  
-
   scenario "able to see the user profile" do 
   	visit(user_path(user))
   	expect(page).to have_content(user.name)
