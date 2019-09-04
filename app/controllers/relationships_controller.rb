@@ -1,7 +1,7 @@
 class RelationshipsController < ApplicationController
 include SessionsHelper
     def create
-        debugger
+         debugger
          user = User.find(params[:followed_id])
          current_user.follow(user)
          respond_to do |format|

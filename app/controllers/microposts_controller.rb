@@ -26,7 +26,6 @@ class MicropostsController < ApplicationController
         params.require(:micropost).permit(:content, :picture)
       end
       def logged_in_user
-      
         unless logged_in?
           store_location
           flash[:danger] = "Please log in to continue"

@@ -39,7 +39,5 @@ FactoryBot.define do
     factory :invalid_micropost, class: Micropost do
       content {  }
       picture { "asdasd.jpg" }
-    end
-
-    
+    end    
 end

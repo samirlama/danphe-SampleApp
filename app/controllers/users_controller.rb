@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
     # before_action :logged_in_user, only: %i[edit update show]
-    before_action :correct_user, only: %i[edit update show followers following]
+    before_action :correct_user, only: %i[edit update followers following]
     include SessionsHelper
     
     def index

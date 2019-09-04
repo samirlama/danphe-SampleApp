@@ -27,7 +27,6 @@ class User < ApplicationRecord
     
       # Unfollows a user.
       def unfollow(other_user)
-        debugger
         active_relationships.find_by(followed_id: other_user.id).destroy
       end
     
