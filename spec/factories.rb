@@ -1,12 +1,14 @@
 FactoryBot.define do
-
-
-    factory :user do
+    
+  factory :user do
       name { "Josephs" }
       email { "joe@gmail.com" }
       password { "blahblah" }
       password_confirmation { "blahblah" }
       activated { true } 
+      reset_token { self.new_token }
+      reset_digest { self.digest(reset_token) }
+      reset_sent_at { Time.now }
     end
     factory :user1, class: User do
       name { "Josephs" }
