@@ -1,78 +1,94 @@
 class UsersController < ApplicationController
-    # before_action :logged_in_user, only: %i[edit update show]
-    before_action :correct_user, only: %i[edit update followers following]
-    include SessionsHelper
-    
+    before_action :logged_in_user, only: [:index, :edit, :update, :destroy,
+    :following, :followers]
+    before_action :correct_user, only: [:edit, :update]
+    before_action :admin_user, only: :destroy
+
     def index
-        @users = User.where(activated: true).paginate(page: params[:page], per_page: 5)
+        @users = User.paginate(page: params[:page]) 
     end
+
+    def show
+        @user = User.find(params[:id])
+        @microposts = @user.microposts.paginate(page: params[:page])
+    end
+
     def new
         @user = User.new
     end
-    
-    def show
-        @user = User.find(params[:id])
-        @micro = @user.microposts.paginate(page: params[:page], per_page: 10)
-    end
 
-    def edit 
+    def create 
+        @user = User.new(user_params) 
+        if @user.save
+            @user.send_activation_email
+            flash[:info] = "Please check your email to activate your account."
+            redirect_to root_url
+        else
+            render 'new'
+        end
+    end  
+
+    def edit
         @user = User.find(params[:id])
     end
 
     def update 
         @user = User.find(params[:id])
         if @user.update_attributes(user_params)
-            flash[:success] = "Profile was edited successfully"
-            redirect_to @user
+            flash[:success] = "Profile updated"
+            redirect_to @user 
         else
-            render 'new'
-        end
-    end
-
-    def create 
-        @user = User.new(user_params)
-        if @user.valid? 
-            @user.save
-            UserMailer.account_activation(@user).deliver_now    
-            log_in @user
-            flash[:success] = "Welcome #{@user.name} to the sample App"
-            redirect_to @user
-        else
-            render 'new'
+            render 'edit'
         end
     end
 
     def destroy
+        debugger
         @user = User.find(params[:id])
-        @user.destroy
-        flash[:success] = "User is successfully deleted"
-        redirect_to "/"
+        if (@user != current_user && !@user.admin?)
+            User.find(params[:id]).destroy
+            flash[:success] = "User deleted"
+        else
+            flash[:danger] = "Can't delete user with admin privilege"
+        end
+        redirect_to users_url
     end
 
-    def following
+    def following 
         @title = "Following"
-        @user  = User.find(params[:id])
+        @user = User.find(params[:id])
         @users = @user.following.paginate(page: params[:page])
         render 'show_follow'
-      end
-    
-      def followers
+    end
+
+    def followers
         @title = "Followers"
-        @user  = User.find(params[:id])
+        @user = User.find(params[:id])
         @users = @user.followers.paginate(page: params[:page])
         render 'show_follow'
-      end
+    end
 
-    private
+
+private 
     def user_params
-        params.require(:user).permit(:name , :email , :password , :password_confirmation, :activated)
+        params.require(:user).permit(:name, :email, :password, :password_confirmation)
     end
 
-   
-    def correct_user
-        @user = User.find_by(id: params[:id])
-        redirect_to current_user unless current_user?(@user)           
+    def logged_in_user
+        unless logged_in?
+            store_location
+            redirect_to login_url, notice: "Please log in." 
+        end
     end
-    
+
+    def correct_user
+        @user = User.find(params[:id])
+        redirect_to(root_url) unless current_user?(@user)
+    end
+
+    def admin_user
+        debugger
+        redirect_to(root_url) unless current_user.admin?
+    end
    
 end

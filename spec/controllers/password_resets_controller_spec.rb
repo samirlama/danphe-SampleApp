@@ -34,7 +34,7 @@ RSpec.describe PasswordResetsController, type: :controller do
         end
 
         context "when password is invalid" do
-            it "doesnt update password and redirecs to edit oage" do
+            it "doesnt update password and redirects to edit page" do
                 put :update, params: { id: user.reset_token, email: user.email, user: {password: "abcdefgh", password_confirmation: "abcdefg"}}
                 expect(response).to render_template :edit
             end

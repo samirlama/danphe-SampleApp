@@ -15,17 +15,18 @@ RSpec.describe UsersController, type: :controller do
     describe "GET #show" do
         let(:user_1) { FactoryBot.create(:user) }
         let(:user_2) {FactoryBot.create(:user, email: "asdasdas@gmail.com")}
-        before(:each) do
-            session[:user_id] = user_1.id
-        end
-        context "when correct user" do  
+       
+        context "when user is logged in" do  
+            before(:each) do
+                session[:user_id] = user_1.id
+            end
             it "renders show page of correct user" do
                 get :show, params:{ id: user_1.id } 
                 expect(response).to be_success
             end 
         end
-        context "when incorrect user" do
-            it "renders show page of own" do
+        context "when user is not logged in" do
+            it "redirects to " do
                 get :show, params: { id: user_2.id }
                 expect(response).to redirect_to(user_1)
             end
@@ -87,15 +88,22 @@ RSpec.describe UsersController, type: :controller do
     end
 
     describe "DELETE #destroy" do
-    let!(:user) { create(:user) }
-        it "destroys user" do
-            expect{
-            delete :destroy, params: {id: user.id}
-        }.to change(User, :count).by(-1)
-        end
-        it "redirects to root path" do 
-            delete :destroy, params: {id: user.id}
-            expect(response).to redirect_to root_path     
+        let!(:user_admin) { create(:user_admin) }
+        let!(:user_admin1) { create(:user_admin1) }
+        let!(:user) { create(:user) }
+        let(:user_admin_session) { {user_id: user_admin.id}}
+        context "when user is admin" do
+            it "can delete other user" do
+                expect{
+                    delete :destroy, params: {id: user.id}, session: user_admin_session
+            }.to change(User, :count).by(-1)
+            end
+
+            it "cannot delete other admin" do
+                expect{
+                    delete :destroy, params: { id: user_admin1.id }, session: user_admin_session
+            }.not_to change(User, :count)
+            end
         end
     end
 end

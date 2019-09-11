@@ -22,18 +22,18 @@ class User < ApplicationRecord
     validates :password, presence: true, length: { minimum: 6 }
 
     def follow(other_user)
-        active_relationships.create(followed_id: other_user.id)
-    end
+        following << other_user
+      end
     
-      # Unfollows a user.
       def unfollow(other_user)
-        active_relationships.find_by(followed_id: other_user.id).destroy
+        following.delete(other_user)
       end
     
-      # Returns true if the current user is following the other user.
+    
       def following?(other_user)
-        active_relationships.find_by(followed_id: other_user.id)
+        following.include?(other_user)
       end
+    
     
     def downcase_email
         self.email = email.downcase

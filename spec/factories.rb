@@ -10,6 +10,23 @@ FactoryBot.define do
       reset_digest { self.digest(reset_token) }
       reset_sent_at { Time.now }
     end
+
+    factory :user_admin, class: User do
+      name { "Josephs" }
+      email { "joe2@gmail.com" }
+      password { "blahblah" }
+      password_confirmation { "blahblah" }
+      admin { true }
+    end
+
+    factory :user_admin1, class: User do
+      name { "Josephs" }
+      email { "joe3@gmail.com" }
+      password { "blahblah" }
+      password_confirmation { "blahblah" }
+      admin { true }
+    end
+
     factory :user1, class: User do
       name { "Josephs" }
       email { "joe1@gmail.com" }
