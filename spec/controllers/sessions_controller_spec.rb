@@ -19,8 +19,8 @@ RSpec.describe SessionsController, type: :controller do
     end
 
     describe "DELETE #destroy" do
-        let(:user) { create(:user) }
         before do
+            user
             session[:user_id] = user.id        
         end
         it "logs out user" do

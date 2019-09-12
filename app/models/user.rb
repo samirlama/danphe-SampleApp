@@ -22,7 +22,9 @@ class User < ApplicationRecord
     validates :password, presence: true, length: { minimum: 6 }
 
     def follow(other_user)
-        following << other_user
+        debugger
+        # following << other_user
+        active_relationships.create(followed_id: other_user.id)
       end
     
       def unfollow(other_user)
@@ -69,10 +71,6 @@ class User < ApplicationRecord
         self.activation_digest = digest(activation_token)    
     end
 
-    # def send_email
-    #     UserMailer.account_activation(self).deliver_now
-    # end
-
     def activate
         update_columns(activated: true, activation_at: Time.zone.now)
     end
@@ -93,5 +91,9 @@ class User < ApplicationRecord
 
     def feed
         Micropost.where(user_id: self.id)
+    end
+
+    def send_activation_email
+        UserMailer.account_activation(self).deliver_now
     end
 end

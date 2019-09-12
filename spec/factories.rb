@@ -17,6 +17,7 @@ FactoryBot.define do
       password { "blahblah" }
       password_confirmation { "blahblah" }
       admin { true }
+      activated { true }
     end
 
     factory :user_admin1, class: User do
@@ -25,6 +26,7 @@ FactoryBot.define do
       password { "blahblah" }
       password_confirmation { "blahblah" }
       admin { true }
+      activated { true }
     end
 
     factory :user1, class: User do
@@ -48,6 +50,14 @@ FactoryBot.define do
         password { "blahblah" }
         password_confirmation { "blahblah" }
         activated { true }
+    end
+
+    factory :valid_user, class: User do
+      name { "Josephs" }
+      email { "samirl@gmail.com" }
+      password { "blahblah" }
+      password_confirmation { "blahblah" }
+      activated { true }
     end
 
     factory :micropost do

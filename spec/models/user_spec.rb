@@ -60,7 +60,7 @@ RSpec.describe User, type: :model do
       end
       it "follows other user" do
           result = user1.following?(user2)
-          expect(relationship).to eq([result])
+          expect(result).to eq(true)
       end
     end
     

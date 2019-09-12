@@ -21,7 +21,7 @@ RSpec.feature "UserSignups", type: :feature do
           fill_in "user_password_confirmation", with: "1221231"
         end
         click_button 'Submit'
-        expect(page).to have_content("Welcome samir lama to the sample App"); 
+        expect(page).to have_content("Please check your email to activate your account"); 
     end
 
     scenario "shouldnt be able to signup" do

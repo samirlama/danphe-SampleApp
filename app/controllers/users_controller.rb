@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
     before_action :logged_in_user, only: [:index, :edit, :update, :destroy,
-    :following, :followers]
+    :following, :followers, :show]
     before_action :correct_user, only: [:edit, :update]
     before_action :admin_user, only: :destroy
 
@@ -18,6 +18,7 @@ class UsersController < ApplicationController
     end
 
     def create 
+        debugger
         @user = User.new(user_params) 
         if @user.save
             @user.send_activation_email
@@ -33,6 +34,7 @@ class UsersController < ApplicationController
     end
 
     def update 
+        debugger
         @user = User.find(params[:id])
         if @user.update_attributes(user_params)
             flash[:success] = "Profile updated"

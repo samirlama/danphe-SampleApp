@@ -18,7 +18,7 @@ RSpec.describe RelationshipsController, type: :controller do
                     user2 = User.create(name: "samir", email: "abdd@gmail.com", password: "123456", password_confirmation: "123456")
                     relationship  = Relationship.create(follower_id: user1.id, followed_id: user2.id) 
              expect{
-                delete :destroy, params: {id: relationship.id},session: { user_id: user1.id}
+                delete :destroy, params: {id: relationship.id, format: 'js'},session: { user_id: user1.id}
         }.to change(Relationship, :count).by(-1)
         end
     end

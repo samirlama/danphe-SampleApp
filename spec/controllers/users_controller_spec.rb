@@ -1,52 +1,62 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
+    let(:user) { create(:user) }
+    let(:user1) { create(:user1) }
+    let(:invalid_user) { FactoryBot.attributes_for(:invalid_user) } 
+    let(:valid_user) { FactoryBot.attributes_for(:valid_user) }
+    let!(:user_admin) { create(:user_admin) }
+    let!(:user_admin1) { create(:user_admin1) }
+    let(:valid_session) { {user_id: user.id} }
+    let(:user_admin_session) { {user_id: user_admin.id}}
     describe "GET #index" do
-       it "assigns user where activated is true" do
-            users = User.where(activated: true).all
-            expect(@users.to_a).to eq(users.to_a)
+        context "when user is logged in" do
+            before do
+                session[:user_id] = user.id
+            end
+            it "renders index template" do
+                get :index
+                expect(response).to have_http_status(200)
+            end
         end
-        it "renders index template" do
-            get :index
-            expect(response).to render_template :index
+
+        context "when user is not logged in" do
+            it "should redirect to login url" do
+                get :index
+                expect(response).to redirect_to login_url
+            end
         end
     end
 
     describe "GET #show" do
-        let(:user_1) { FactoryBot.create(:user) }
-        let(:user_2) {FactoryBot.create(:user, email: "asdasdas@gmail.com")}
-       
         context "when user is logged in" do  
             before(:each) do
-                session[:user_id] = user_1.id
+                session[:user_id] = user.id
             end
             it "renders show page of correct user" do
-                get :show, params:{ id: user_1.id } 
+                get :show, params:{ id: user.id } 
                 expect(response).to be_success
             end 
         end
         context "when user is not logged in" do
             it "redirects to " do
-                get :show, params: { id: user_2.id }
-                expect(response).to redirect_to(user_1)
+                get :show, params: { id: user.id }
+                expect(response).to redirect_to login_url
             end
         end
     end
 
     describe "POST #create" do
-        let(:user) { FactoryBot.attributes_for(:user) }
-        let!(:invalid_user) { FactoryBot.attributes_for(:invalid_user) }
         context "when user is valid" do
             it "creates a new user" do
                 expect{
-                    post :create, params: {user: user}
+                    post :create, params: {user: valid_user}
             }.to  change(User, :count).by(1)
             end
-            it "redirects to user path" do
-                post :create, params: {user: user}
-                expect(response).to have_http_status(302)
+            it "redirects to root path" do
+                post :create, params: {user: valid_user}
+                expect(response).to redirect_to root_url
             end
-            
         end
 
         context "when user is invalid" do
@@ -63,35 +73,34 @@ RSpec.describe UsersController, type: :controller do
     end
 
     describe "PUT #update" do
-        let(:user) { create(:user)}
-        let(:user1) { create(:user1) }
-        let(:valid_session) { {user_id: user.id} }
-        context "when user is not correct" do
-            it "redirect_to current_user" do
-                put :update, params: {id: user1.id, user: FactoryBot.attributes_for(:user) },session: valid_session 
-                expect(response).to redirect_to user
+        context "when user is not logged in" do
+            it "redirects to login url" do
+                put :update, params: {id: user.id, user: valid_user }
+                expect(response).to redirect_to login_url
             end
         end
-        context "when attributes are valid" do 
-            it "redirects to user" do
-                put :update,params: {id: user.id, user: FactoryBot.attributes_for(:user, email: "samir@gmail.com")}, session: valid_session
-                expect(response).to redirect_to user
+
+        context "when user is logged in" do 
+            context "when params are valid" do
+                it "should update user" do
+                    put :update, params: { id: user.id, user: valid_user}, session: valid_session
+                    expect(response).to redirect_to user
+                end
             end
-        end
-     
-        context "when user is invalid" do
-             it "redirect to new" do
-                 put :update, params: {id: user.id, user: FactoryBot.attributes_for(:user1, email: "111111")}, session: valid_session
-                 expect(response).to render_template :new
-             end
+
+            context "when params are invalid" do
+                it "shouldnt update user" do
+                    put :update, params: { id: user.id, user: invalid_user}, session: valid_session
+                    expect(response).to render_template :edit
+                end
+            end
         end
     end
 
     describe "DELETE #destroy" do
-        let!(:user_admin) { create(:user_admin) }
-        let!(:user_admin1) { create(:user_admin1) }
-        let!(:user) { create(:user) }
-        let(:user_admin_session) { {user_id: user_admin.id}}
+        before do
+            user
+        end
         context "when user is admin" do
             it "can delete other user" do
                 expect{
