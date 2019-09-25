@@ -3,10 +3,10 @@ require 'rails_helper'
 RSpec.describe UsersController, type: :controller do
     let(:user) { create(:user) }
     let(:user1) { create(:user1) }
-    let(:invalid_user) { FactoryBot.attributes_for(:invalid_user) } 
-    let(:valid_user) { FactoryBot.attributes_for(:valid_user) }
+    let(:invalid_user) { FactoryBot.attributes_for(:user2, :invalid_email) } 
+    let(:valid_user) { FactoryBot.attributes_for(:user2, :valid_email) }
     let!(:user_admin) { create(:user_admin) }
-    let!(:user_admin1) { create(:user_admin1) }
+    let!(:user_admin1) { create(:user_admin) }
     let(:valid_session) { {user_id: user.id} }
     let(:user_admin_session) { {user_id: user_admin.id}}
     describe "GET #index" do

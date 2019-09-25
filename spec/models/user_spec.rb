@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  let(:user1) {create(:user1)}
-  let (:user2) { create(:user2) }
+  let(:user1) {create(:user1, :user_email)}
+  let (:user2) { create(:user2, :user_email1) }
   let (:relationship ) { Relationship.all }
   describe "validations" do
     it {is_expected.to validate_presence_of(:name)}

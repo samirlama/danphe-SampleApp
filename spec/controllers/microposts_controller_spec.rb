@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe MicropostsController, type: :controller do
     describe "POST #create" do
         let(:user) { create(:user) }
-        let(:micropost) { FactoryBot.attributes_for(:micropost) }
-        let(:invalid_micropost) { FactoryBot.attributes_for(:invalid_micropost) }
+        let(:micropost) { FactoryBot.attributes_for(:micropost, :valid_content) }
+        let(:invalid_micropost) { FactoryBot.attributes_for(:micropost, :invalid_content) }
         let(:valid_session) { {user_id: user.id} }
         context "when user is not logged in" do
             it "redirect_to root path" do

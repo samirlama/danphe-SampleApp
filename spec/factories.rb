@@ -2,7 +2,7 @@ FactoryBot.define do
     
   factory :user do
       name { "Josephs" }
-      email { "joe@gmail.com" }
+      sequence(:email) { |n| "joe#{n+100}@gmail.com" }
       password { "blahblah" }
       password_confirmation { "blahblah" }
       activated { true } 
@@ -13,60 +13,33 @@ FactoryBot.define do
 
     factory :user_admin, class: User do
       name { "Josephs" }
-      email { "joe2@gmail.com" }
+      sequence(:email) {|n| "joe#{n+5}@gmail.com" }
       password { "blahblah" }
       password_confirmation { "blahblah" }
       admin { true }
       activated { true }
     end
 
-    factory :user_admin1, class: User do
+    factory :user2, class: User do 
       name { "Josephs" }
-      email { "joe3@gmail.com" }
-      password { "blahblah" }
-      password_confirmation { "blahblah" }
-      admin { true }
-      activated { true }
-    end
-
-    factory :user1, class: User do
-      name { "Josephs" }
-      email { "joe1@gmail.com" }
-      password { "blahblah" }
-      password_confirmation { "blahblah" }
-    end
-    
-    factory :user2, class: User do
-      name { "Josephs" }
-      email { "joe2@gmail.com" }
-      password { "blahblah" }
-      password_confirmation { "blahblah" }
-      activated { true } 
-    end
-
-    factory :invalid_user, class: User do 
-      name { "Josephs" }
-       email { 12312312 }
+      trait :invalid_email do
+        email { 12312312 }
+      end
+      trait :valid_email do
+        email { "samirl@gmail.com" }
+      end
         password { "blahblah" }
         password_confirmation { "blahblah" }
         activated { true }
     end
 
-    factory :valid_user, class: User do
-      name { "Josephs" }
-      email { "samirl@gmail.com" }
-      password { "blahblah" }
-      password_confirmation { "blahblah" }
-      activated { true }
-    end
-
     factory :micropost do
-      content { "sadashdfaysugdyasgduagsudiagsudgasd"}
+      trait :valid_content do
+        content { "sadashdfaysugdyasgduagsudiagsudgasd"}
+      end
+      trait :invalid_content do
+        content { }
+      end
       picture { "abcasd1.jpg" }
     end
-
-    factory :invalid_micropost, class: Micropost do
-      content {  }
-      picture { "asdasd.jpg" }
-    end    
 end

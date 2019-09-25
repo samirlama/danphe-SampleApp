@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.feature "UsersProfile", type: :feature do
   let(:user) { create(:user) }
-  let(:user1) { create(:user1) }
+  let(:user1) { create(:user1, :user_email) }
   let(:micropost) { create(:micropost, user: user) }
   subject(:relationship) { Relationship.create(followed_id: user1.id, follower_id: user.id) }
  
