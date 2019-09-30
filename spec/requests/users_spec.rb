@@ -2,12 +2,12 @@ require 'rails_helper'
 
 RSpec.describe "Users", type: :request do
   include ApplicationHelper
-  let(:user) { create(:user) }
-  let(:user1) { create(:user1)}
-  let(:invalid_user) { FactoryBot.attributes_for(:invalid_user)}
-  let(:valid_user) { FactoryBot.attributes_for(:valid_user)}
-  let(:user_admin) { create(:user_admin) }
-  let(:user_admin1) { create(:user_admin1) }
+  let(:user) { create(:user, :user_activated) }
+  let(:user1) { create(:user)}
+  let(:invalid_user) { FactoryBot.attributes_for(:user, :invalid_email)}
+  let(:valid_user) { FactoryBot.attributes_for(:user)}
+  let(:user_admin) { create(:user, :user_admin, :user_activated) }
+  let(:user_admin1) { create(:user, :user_admin, :user_activated) }
   
 	describe "GET /users" do
 		context "when user is not logged in" do 
@@ -66,8 +66,8 @@ RSpec.describe "Users", type: :request do
         it "should not be able to to edit" do
           log_in_as(user)
           get edit_user_path(user1.id)  
-          expect(response).to redirect_to edit_user(user)
-          expect(respone).ro have_http_status(302)
+          expect(response).to redirect_to root_url
+          expect(response).to have_http_status(302)
         end 
      end
   end
@@ -112,9 +112,8 @@ RSpec.describe "Users", type: :request do
       end
 
       context "when user is not activated" do
-      user = User.create(name: "Sam", email: "abc@gmail.com", password: "123456", password: "123456")
         it "should redirect to root url" do
-          post login_path, params: { session: {email: user.email, password: user.password}}
+          post login_path, params: { session: {email: user1.email, password: user1.password}}
           expect(response).to redirect_to root_url
         end
       end
@@ -133,7 +132,7 @@ RSpec.describe "Users", type: :request do
   describe "PATCH /user/:id" do 
     context "when user is not logged in" do 
     	it "should redirect to root_url" do
-    		patch user_path(user), params: { user: user1 }
+    		patch user_path(user), params: { user: valid_user }
     		expect(response).to have_http_status(302)
       end
     end
@@ -142,17 +141,17 @@ RSpec.describe "Users", type: :request do
       context "when user is valid" do
         it "should update user" do
           log_in_as(user)
-          patch user_path(user), params: { user: FactoryBot.attributes_for(:user1)}
+          patch user_path(user), params: { user: valid_user}
           expect(response).to have_http_status(302)
           expect(response).to redirect_to(user_path(user))
         end
       end
 
-      context "when attributes are invaliu" do
+      context "when attributes are invalid" do
         it "shouldn't update user" do
           log_in_as(user)
           patch user_path(user), params: {user: { name: ''}}
-          expect(response).to render_template :new
+          expect(response).to render_template :edit
         end
       end
     end
@@ -161,9 +160,9 @@ RSpec.describe "Users", type: :request do
   describe "POST /signup" do
     context "when attributes are valid" do
       it "should redirect to root url" do
-        post users_path, params: {user: FactoryBot.attributes_for(:user)}
+        post users_path, params: {user: valid_user}
         expect(response).to have_http_status(302)
-        expect(response).to redirect_to(user_path(user))
+        expect(response).to redirect_to root_url
       end
     end
 
@@ -188,7 +187,7 @@ RSpec.describe "Users", type: :request do
       context "when admin tries to delete user" do
         it "should delete user" do
           log_in_as(user_admin)
-          delete user_path(user1)
+          delete user_path(user)
           expect(response).to have_http_status(302)
           expect(User.count).to eq(1)
         end

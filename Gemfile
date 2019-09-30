@@ -31,6 +31,8 @@ gem 'will_paginate', '~> 3.1.0'
 gem 'carrierwave', '>=1.2.2'
 gem 'faker', '>= 1.6.6'
 gem 'mini_magick', '>= 4.7.0'
+gem 'imgkit'
+gem 'wkhtmltoimage-binary'
 
 gem 'rails-controller-testing'
 # Use ActiveStorage variant

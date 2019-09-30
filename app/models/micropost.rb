@@ -7,6 +7,7 @@ class Micropost < ApplicationRecord
 
   private
   def picture_size
+    debugger
     if picture.size > 500.kilobytes
       errors.add(:picture, "should be less than 500 kilobyte")
     end
