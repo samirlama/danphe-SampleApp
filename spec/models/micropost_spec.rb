@@ -13,7 +13,7 @@ RSpec.describe Micropost, type: :model do
 
       context "when image size is less than 500kb" do
         it "should validate picture" do
-          bmp = BMP::Writer.new(2,2)
+          bmp = ImageWriter.new(2,2)
           bmp[0,0] = "ff0000"
           bmp[1,0] = "00ff00"
           bmp[0,1] = "0000ff"
@@ -28,8 +28,8 @@ RSpec.describe Micropost, type: :model do
       end
 
       context "when image size is more than 500kb" do
-        it "should'nt validate picture" do
-          bmp = BMP::Writer.new(600,600)
+        it "shouldn't validate picture" do
+          bmp = ImageWriter.new(600,600)
           bmp[0,0] = "ff0000"
           bmp[1,0] = "00ff00"
           bmp[0,1] = "0000ff"
@@ -42,8 +42,5 @@ RSpec.describe Micropost, type: :model do
           expect(subject.errors[:picture]).to include('should be less than 500 kilobyte')
         end
       end
-
-
     end
-
 end
