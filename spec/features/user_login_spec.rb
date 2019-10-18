@@ -1,5 +1,4 @@
 require 'rails_helper'
-
 RSpec.feature "UserLogins", type: :feature do
   let(:user) { create(:user) }
   scenario "visit login page" do

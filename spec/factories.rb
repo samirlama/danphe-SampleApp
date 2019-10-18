@@ -8,9 +8,10 @@ FactoryBot.define do
       end
       password { "blahblah" }
       password_confirmation { "blahblah" }
-      trait :user_activated do
-        activated { true }
+      trait :user_inactivated do
+        activated { false }
       end
+      activated { true }
       reset_token { self.new_token }
       reset_digest { self.digest(reset_token) }
       reset_sent_at { Time.now }

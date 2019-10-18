@@ -2,12 +2,12 @@ require 'rails_helper'
 
 RSpec.describe "Users", type: :request do
   include ApplicationHelper
-  let(:user) { create(:user, :user_activated) }
-  let(:user1) { create(:user)}
+  let(:user) { create(:user) }
+  let(:inactivated_user) { create(:user, :user_inactivated)}
   let(:invalid_user) { FactoryBot.attributes_for(:user, :invalid_email)}
   let(:valid_user) { FactoryBot.attributes_for(:user)}
-  let(:user_admin) { create(:user, :user_admin, :user_activated) }
-  let(:user_admin1) { create(:user, :user_admin, :user_activated) }
+  let(:user_admin) { create(:user, :user_admin) }
+  let(:user_admin1) { create(:user, :user_admin) }
   
 	describe "GET /users" do
 		context "when user is not logged in" do 
@@ -65,7 +65,7 @@ RSpec.describe "Users", type: :request do
      context "when user tries to edit other user pages" do
         it "should not be able to to edit" do
           log_in_as(user)
-          get edit_user_path(user1.id)  
+          get edit_user_path(inactivated_user.id)  
           expect(response).to redirect_to root_url
           expect(response).to have_http_status(302)
         end 
@@ -113,7 +113,7 @@ RSpec.describe "Users", type: :request do
 
       context "when user is not activated" do
         it "should redirect to root url" do
-          post login_path, params: { session: {email: user1.email, password: user1.password}}
+          post login_path, params: { session: {email: inactivated_user.email, password: inactivated_user.password}}
           expect(response).to redirect_to root_url
         end
       end
@@ -178,7 +178,7 @@ RSpec.describe "Users", type: :request do
     context "when user is not admin" do
       it "cant delete other user" do
         log_in_as(user)
-        delete user_path(user1)
+        delete user_path(inactivated_user)
         expect(response).to have_http_status(302)
       end
     end
